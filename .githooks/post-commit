@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# Aetos auto-deploy: after every commit, kick off a Vercel PREVIEW deploy
+# in the background so the commit returns instantly. Output is appended to
+# .vercel/auto-deploy.log. Disable by removing/renaming this file, or set
+# AETOS_NO_DEPLOY=1 in your env to skip a run.
+#
+set -euo pipefail
+
+[ "${AETOS_NO_DEPLOY:-0}" = "1" ] && exit 0
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT" || exit 0
+
+# Make sure the pnpm-installed vercel CLI is on PATH inside the hook env.
+export PATH="$HOME/.local/share/pnpm:$PATH"
+VERCEL="$(command -v vercel || true)"
+
+mkdir -p .vercel
+LOG="$ROOT/.vercel/auto-deploy.log"
+
+if [ -z "$VERCEL" ]; then
+  echo "── $(date '+%F %T') vercel CLI not found on PATH — skipped" >> "$LOG"
+  exit 0
+fi
+
+SHA="$(git rev-parse --short HEAD)"
+MSG="$(git log -1 --pretty=%s)"
+
+# Detach the deploy so `git commit` doesn't block on the ~1 min build.
+nohup bash -c '
+  echo "── '"$(date '+%F %T')"' deploy '"$SHA"' — '"$MSG"'" >> "'"$LOG"'"
+  "'"$VERCEL"'" deploy --yes >> "'"$LOG"'" 2>&1 \
+    && echo "── done  '"$(date '+%F %T')"'" >> "'"$LOG"'" \
+    || echo "── FAILED '"$(date '+%F %T')"' (see log above)" >> "'"$LOG"'"
+' >/dev/null 2>&1 &
+
+disown 2>/dev/null || true
+exit 0
