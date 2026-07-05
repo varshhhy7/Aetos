@@ -2,7 +2,7 @@
  
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { EtherealShadow } from "@/components/ui/etheral-shadow";
 import { Player } from "@remotion/player";
 import { BranchComposition } from "@/remotion/BranchComposition";
@@ -138,40 +138,6 @@ const INITIAL_BRANCHES: Record<string, Timeline> = {
     ],
   },
 };
-
-// Framer motion variants
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.25, 0.1, 0.25, 1] } },
-};
-
-const stagger: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-
-const workflowSteps = [
-  {
-    title: "Upload Raw Video",
-    body: "Start with one unedited video or timeline export.",
-  },
-  {
-    title: "Launch Agents",
-    body: "Aetos creates multiple editing agents with different goals: viral, premium, story, and brand-safe.",
-  },
-  {
-    title: "Create Branches",
-    body: "Each agent works in its own versioned sandbox without touching the main cut.",
-  },
-  {
-    title: "Score Outputs",
-    body: "A verifier scores every branch on hook, pacing, captions, CTA, brand fit, and technical quality.",
-  },
-  {
-    title: "Learn From Approvals",
-    body: "Approvals, rejections, comments, and merges become reward signals for future agents.",
-  },
-];
 
 const agentCards = [
   {
@@ -808,7 +774,7 @@ function WorkflowFlowchart() {
                 }}
                 className={`relative group cursor-pointer text-left bg-[#0c0b0b] border rounded-xl p-5 transition-all duration-300 flex items-start gap-4 ${
                   isActive
-                    ? "border-zinc-755 shadow-[0_0_20px_rgba(242,169,78,0.02)] bg-[#0e0d0d]"
+                    ? "border-zinc-700 shadow-[0_0_20px_rgba(242,169,78,0.02)] bg-[#0e0d0d]"
                     : "border-[#1c1b19] hover:border-zinc-800 opacity-60 hover:opacity-85"
                 }`}
               >
