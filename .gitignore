@@ -51,3 +51,7 @@ external/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# oversized raw demo video (exceeds GitHub 100MB limit) and local MCP config
+demoFolder/
+.mcp.json

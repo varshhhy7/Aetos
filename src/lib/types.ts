@@ -46,6 +46,12 @@ export type TimelineClip = {
   caption?: string;
   transition?: string;
   notes?: string;
+  // Real source footage for this clip (served from /public). Each of the demo's
+  // four source pieces maps to a clip role, so every branch renders the actual
+  // video graded and captioned to that person's cut.
+  sourceUrl?: string;
+  // Seconds into the source file to start playback from (defaults to 0).
+  sourceStart?: number;
 };
 
 export type AudioSettings = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Branch } from "@/lib/types";
 import { useAetosStore } from "@/lib/store";
@@ -24,6 +24,9 @@ export function Timeline({ branch }: { branch: Branch }) {
   // Real-time playback simulation state
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isScrubbing, setIsScrubbing] = useState(false);
+
+  const rulerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isPlaying) return;
@@ -42,12 +45,85 @@ export function Timeline({ branch }: { branch: Branch }) {
     return () => clearInterval(interval);
   }, [isPlaying, branch.timeline.duration]);
 
-  const handleTimelineClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
+  // Handle playhead scrubbing drag
+  useEffect(() => {
+    if (!isScrubbing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!rulerRef.current) return;
+      const rect = rulerRef.current.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = clickX / rect.width;
+      const newTime = Math.max(0, Math.min(branch.timeline.duration, pct * branch.timeline.duration));
+      setCurrentTime(newTime);
+    };
+
+    const handleMouseUp = () => {
+      setIsScrubbing(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isScrubbing, branch.timeline.duration]);
+
+  const handleRulerMouseDown = (e: React.MouseEvent) => {
+    setIsScrubbing(true);
+    if (!rulerRef.current) return;
+    const rect = rulerRef.current.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const pct = clickX / rect.width;
     const newTime = Math.max(0, Math.min(branch.timeline.duration, pct * branch.timeline.duration));
     setCurrentTime(newTime);
+  };
+
+  // Trimming right edge of clip (End duration)
+  const handleRightTrimMouseDown = (clipId: string, start: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!rulerRef.current) return;
+    const rect = rulerRef.current.getBoundingClientRect();
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const relativeX = moveEvent.clientX - rect.left;
+      const computedEnd = (relativeX / rect.width) * branch.timeline.duration;
+      // Guarantee at least 1 second clip duration
+      const newEnd = Math.max(start + 1, Math.min(branch.timeline.duration, computedEnd));
+      updateClip(branch.id, clipId, { end: newEnd });
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+  };
+
+  // Trimming left edge of clip (Start duration)
+  const handleLeftTrimMouseDown = (clipId: string, end: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!rulerRef.current) return;
+    const rect = rulerRef.current.getBoundingClientRect();
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      const relativeX = moveEvent.clientX - rect.left;
+      const computedStart = (relativeX / rect.width) * branch.timeline.duration;
+      // Guarantee at least 1 second clip duration
+      const newStart = Math.max(0, Math.min(end - 1, computedStart));
+      updateClip(branch.id, clipId, { start: newStart });
+    };
+
+    const handleMouseUp = () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
@@ -82,7 +158,7 @@ export function Timeline({ branch }: { branch: Branch }) {
         </div>
         <div className="flex items-center gap-2">
           <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-          <span className="text-[9px] uppercase font-mono text-zinc-500 tracking-wider">Live Timecode</span>
+          <span className="text-[9px] uppercase font-mono text-zinc-500 tracking-wider">Drag playhead to scrub</span>
         </div>
       </div>
 
@@ -93,8 +169,9 @@ export function Timeline({ branch }: { branch: Branch }) {
         
         {/* Ruler ticks every 5 seconds */}
         <div 
-          onClick={handleTimelineClick}
-          className="flex-grow relative h-full cursor-pointer"
+          ref={rulerRef}
+          onMouseDown={handleRulerMouseDown}
+          className="flex-grow relative h-full cursor-ew-resize select-none"
         >
           {Array.from({ length: Math.ceil(branch.timeline.duration / 5) + 1 }).map((_, i) => {
             const sec = i * 5;
@@ -102,7 +179,7 @@ export function Timeline({ branch }: { branch: Branch }) {
             return (
               <div 
                 key={sec} 
-                className="absolute h-full flex flex-col justify-between" 
+                className="absolute h-full flex flex-col justify-between pointer-events-none" 
                 style={{ left: `${leftPct}%` }}
               >
                 <span className="text-[8px] font-mono text-zinc-500 pl-1">{sec}s</span>
@@ -162,20 +239,39 @@ export function Timeline({ branch }: { branch: Branch }) {
                 <div
                   key={clip.id}
                   onClick={() => setOpenClipId(isSelected ? null : clip.id)}
-                  className={`absolute top-1 bottom-1 rounded-lg border-l-4 p-1.5 flex flex-col justify-between cursor-pointer transition-all ${
+                  className={`absolute top-1 bottom-1 rounded-lg border-l-4 p-1.5 flex flex-col justify-between cursor-pointer group transition-all ${
                     isSelected 
                       ? 'bg-zinc-800 border border-teal/60 border-l-teal shadow-lg scale-[1.01] z-20' 
-                      : 'bg-teal/10 border border-hairline border-l-teal hover:bg-teal/20 hover:scale-[1.005]'
+                      : 'bg-teal/10 border border-hairline border-l-teal hover:bg-teal/20'
                   }`}
                   style={{ left: `${startPct}%`, width: `${widthPct}%` }}
                 >
-                  <div className="flex items-center justify-between font-semibold text-white text-[10px]">
-                    <span className="truncate">{clip.name}</span>
-                    <span className="font-mono text-[8px] opacity-75">{clip.end - clip.start}s</span>
+                  {/* Left Trim Handle */}
+                  <div 
+                    onMouseDown={(e) => handleLeftTrimMouseDown(clip.id, clip.end, e)}
+                    className="absolute left-0 top-0 bottom-0 w-2.5 bg-teal/40 opacity-0 group-hover:opacity-100 cursor-ew-resize flex items-center justify-center text-[8px] font-bold text-teal-200"
+                    title="Trim Start"
+                  >
+                    ⟨
                   </div>
-                  <div className="flex justify-between items-center text-[8px] text-zinc-500 font-mono">
+
+                  <div className="flex items-center justify-between font-semibold text-white text-[10px] px-2.5">
+                    <span className="truncate">{clip.name}</span>
+                    <span className="font-mono text-[8px] opacity-75">{Math.round((clip.end - clip.start) * 10) / 10}s</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-[8px] text-zinc-500 font-mono px-2.5">
                     <span className="truncate">{clip.transition || 'cut'}</span>
                     <span>Composition</span>
+                  </div>
+
+                  {/* Right Trim Handle */}
+                  <div 
+                    onMouseDown={(e) => handleRightTrimMouseDown(clip.id, clip.start, e)}
+                    className="absolute right-0 top-0 bottom-0 w-2.5 bg-teal/40 opacity-0 group-hover:opacity-100 cursor-ew-resize flex items-center justify-center text-[8px] font-bold text-teal-200"
+                    title="Trim End"
+                  >
+                    ⟩
                   </div>
                 </div>
               );

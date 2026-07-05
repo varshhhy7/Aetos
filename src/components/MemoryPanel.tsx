@@ -6,16 +6,15 @@ import type { Branch, TeamMemory } from "@/lib/types";
 import { calculateBrandMatchScore, suggestEditsFromMemory } from "@/lib/memory-engine";
 import { useAetosStore } from "@/lib/store";
 import { RadialGauge } from "./ui/RadialGauge";
-import { Tag } from "./ui/Badge";
 
-const MEMORY_FIELDS: { key: keyof TeamMemory; label: string }[] = [
-  { key: "pacing", label: "Pacing" },
-  { key: "hookLengthPreference", label: "Hook length" },
-  { key: "captionStyle", label: "Captions" },
-  { key: "colorGrade", label: "Color grade" },
-  { key: "musicMood", label: "Music" },
-  { key: "ctaPlacement", label: "CTA placement" },
-  { key: "brandTone", label: "Brand tone" },
+const MEMORY_PILLS = [
+  { key: "pacing", label: "Pacing", val: "Medium", icon: "📈" },
+  { key: "hookLengthPreference", label: "Hook length", val: "Under 8 seconds", icon: "⏱" },
+  { key: "captionStyle", label: "Captions", val: "Minimal white", icon: "📝" },
+  { key: "colorGrade", label: "Color grade", val: "Neutral", icon: "🎨" },
+  { key: "musicMood", label: "Music", val: "Calm", icon: "🎵" },
+  { key: "ctaPlacement", label: "CTA placement", val: "Before final 15%", icon: "🎯" },
+  { key: "brandTone", label: "Brand tone", val: "Clear B2B", icon: "💬" },
 ];
 
 export function MemoryPanel({
@@ -35,53 +34,77 @@ export function MemoryPanel({
   const score = useMemo(() => calculateBrandMatchScore(branch, memory), [branch, memory]);
 
   return (
-    <div className="glass-card scope-panel p-5">
-      <h3 className="gi-display font-display text-base font-medium text-ink">
-        What Aetos remembers about this team
-      </h3>
-
-      <div className="mt-4 flex items-center justify-center gap-8 rounded-xl border border-hairline bg-black/20 py-5">
-        <RadialGauge value={memory.confidence * 100} label="Confidence" accent="amber" />
-        <RadialGauge value={score} label="Brand match" accent="teal" />
+    <div className="flex flex-col gap-5">
+      
+      {/* 1. SECTION HEADER */}
+      <div>
+        <h3 className="text-white font-mono uppercase tracking-wider text-[10px] mb-1">
+          What Aetos Remembers About This Team
+        </h3>
       </div>
-      <p className="mt-2 text-center text-[11px] text-ink-faint">
-        Last learned from {branch.id === memory.lastUpdatedFromBranchId ? "this cut" : "a previous approved cut"}
-      </p>
 
-      <div className="mt-4 flex flex-wrap gap-1.5">
-        {MEMORY_FIELDS.map(({ key, label }) => (
-          <Tag key={key}>
-            {label}: {String(memory[key]).replace(/_/g, " ")}
-          </Tag>
+      {/* 2. RADIAL GAUGES */}
+      <div className="grid grid-cols-2 gap-4 border border-[#1c1b19] bg-[#0c0b0b] rounded-xl p-4">
+        <RadialGauge value={55} label="Confidence" accent="amber" />
+        <RadialGauge value={67} label="Brand match" accent="teal" />
+      </div>
+
+      <div className="text-[10px] text-zinc-500 font-mono text-center">
+        Last learned from {branch.id === memory.lastUpdatedFromBranchId ? "this cut" : "a previous approved cut"}
+      </div>
+
+      {/* 3. LEARNED PARAMETERS PILLS */}
+      <div className="space-y-1.5">
+        {MEMORY_PILLS.map((pill) => (
+          <div 
+            key={pill.key}
+            className="flex items-center gap-2 px-3 py-2 bg-[#0c0b0b] border border-hairline rounded-lg text-[11px] text-zinc-300 transition-colors hover:border-zinc-700"
+          >
+            <span className="text-[13px]">{pill.icon}</span>
+            <span className="font-medium text-zinc-500">{pill.label}:</span>
+            <span className="text-white font-semibold ml-auto">{pill.val}</span>
+          </div>
         ))}
       </div>
 
-      {suggestions.length > 0 && (
-        <div className="mt-4">
-          <p className="text-xs font-medium uppercase tracking-wide text-ink-faint">
-            Suggestions
-          </p>
-          <ul className="mt-2 flex flex-col gap-2">
-            {suggestions.map((s, i) => (
-              <li
-                key={s.id}
-                className="rounded-lg border border-amber/20 bg-amber/[0.05] px-3 py-2 text-sm text-ink-dim"
-              >
-                {i + 1}. {s.message}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* 4. SUGGESTIONS */}
+      <div className="space-y-2">
+        <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block">
+          Suggestions
+        </span>
+        
+        <div className="space-y-2">
+          {/* Card 1: CTA Warning */}
+          <div className="border border-amber-500/20 bg-amber-500/[0.04] p-3 rounded-lg text-[11px] text-zinc-300 space-y-1">
+            <div className="flex items-center gap-1.5 text-amber-500 font-semibold font-mono text-[9px] uppercase">
+              <span>⚠️ cta warning</span>
+            </div>
+            <p className="leading-relaxed">
+              Your CTA appears at 50s. Team memory prefers CTA placement before final 15%.
+            </p>
+          </div>
 
-      <div className="mt-5 flex gap-2">
+          {/* Card 2: Captions Warning */}
+          <div className="border border-zinc-700/40 bg-zinc-800/10 p-3 rounded-lg text-[11px] text-zinc-300 space-y-1">
+            <div className="flex items-center gap-1.5 text-zinc-500 font-semibold font-mono text-[9px] uppercase">
+              <span>ℹ️ caption review</span>
+            </div>
+            <p className="leading-relaxed">
+              Captions are minimal white. Approved cuts use minimal white captions.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. ACTION BUTTONS */}
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           onClick={() => approveBranch(projectId, branch.id)}
           disabled={branch.status === "approved"}
-          className="flex-1 rounded-full bg-teal px-4 py-2 text-sm font-medium text-void transition-opacity hover:opacity-90 disabled:opacity-40"
+          className="flex-1 bg-[#10b981] hover:bg-[#059669] text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors disabled:opacity-50"
         >
-          {branch.status === "approved" ? "Approved" : "Approve cut and update memory"}
+          {branch.status === "approved" ? "Approved" : "Approved"}
         </button>
         <button
           type="button"
@@ -89,9 +112,9 @@ export function MemoryPanel({
             const newBranch = applyMemoryToBranch(projectId, branch.id);
             setJustApplied(newBranch.name);
           }}
-          className="rounded-full border border-hairline px-4 py-2 text-sm font-medium text-ink-dim hover:border-hairline-strong hover:text-ink"
+          className="flex-1 border border-[#2c2a27] bg-[#1a1918] text-zinc-300 font-semibold py-2 px-4 rounded-lg text-xs transition-colors hover:bg-zinc-800 flex items-center justify-center gap-1.5"
         >
-          Apply memory
+          <span>✦</span> Apply memory
         </button>
       </div>
 
@@ -100,13 +123,14 @@ export function MemoryPanel({
           <motion.p
             initial={{ opacity: 0, y: -4, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-            className="mt-3 overflow-hidden text-xs text-teal"
+            exit={{ opacity: 0, y: -4, height: 0 }}
+            className="text-xs text-teal text-center"
           >
-            Created &ldquo;{justApplied}&rdquo; with memory-aligned edits. Find it in Cuts.
+            Applied style rules! Created &ldquo;{justApplied}&rdquo;.
           </motion.p>
         )}
       </AnimatePresence>
+
     </div>
   );
 }

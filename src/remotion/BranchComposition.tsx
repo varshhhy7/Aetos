@@ -2,6 +2,7 @@ import {
   AbsoluteFill,
   Easing,
   Sequence,
+  Video,
   interpolate,
   useCurrentFrame,
   useVideoConfig,
@@ -99,39 +100,59 @@ function ClipScene({
   const filter = COLOR_GRADE_FILTERS[globalStyle.colorGrade] ?? "saturate(1.05)";
   const captionStyle = CAPTION_STYLES[captions.style] ?? CAPTION_STYLES.minimal_white;
   const offset = captionOffset(captions.position);
+  const { fps } = useVideoConfig();
 
   return (
     <AbsoluteFill style={{ opacity, transform: `translateX(${translateX}px)` }}>
-      <AbsoluteFill
+      {clip.sourceUrl ? (
+        // Real source footage, color-graded to this branch's style. The same four
+        // pieces back every branch — only the grade, pacing and captions differ.
+        <AbsoluteFill style={{ filter, background: "#000" }}>
+          <Video
+            src={clip.sourceUrl}
+            startFrom={Math.round((clip.sourceStart ?? 0) * fps)}
+            muted
+            loop
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </AbsoluteFill>
+      ) : (
+        <AbsoluteFill
+          style={{
+            background: `linear-gradient(135deg, hsl(${hue} 45% 15%), hsl(${hue + 40} 40% 7%))`,
+            filter,
+          }}
+        />
+      )}
+      <div
         style={{
-          background: `linear-gradient(135deg, hsl(${hue} 45% 15%), hsl(${hue + 40} 40% 7%))`,
-          filter,
+          position: "absolute",
+          top: 16,
+          left: 16,
+          fontFamily: "system-ui, sans-serif",
+          fontSize: 11,
+          letterSpacing: 3,
+          textTransform: "uppercase",
+          color: "rgba(244,244,239,0.75)",
+          textShadow: "0 1px 3px rgba(0,0,0,0.6)",
         }}
-      />
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
-        <div
-          style={{
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 11,
-            letterSpacing: 3,
-            textTransform: "uppercase",
-            color: "rgba(244,244,239,0.55)",
-            marginBottom: 12,
-          }}
-        >
-          {String(clip.order).padStart(2, "0")} · {clip.type}
-        </div>
-        <div
-          style={{
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 40,
-            fontWeight: 500,
-            color: "#f4f4ef",
-          }}
-        >
-          {clip.name}
-        </div>
-      </AbsoluteFill>
+      >
+        {String(clip.order).padStart(2, "0")} · {clip.name}
+      </div>
+      {!clip.sourceUrl && (
+        <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+          <div
+            style={{
+              fontFamily: "system-ui, sans-serif",
+              fontSize: 40,
+              fontWeight: 500,
+              color: "#f4f4ef",
+            }}
+          >
+            {clip.name}
+          </div>
+        </AbsoluteFill>
+      )}
       {clip.caption && (
         <AbsoluteFill
           style={{

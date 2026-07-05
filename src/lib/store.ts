@@ -69,7 +69,7 @@ type AetosState = {
   updateClip: (
     branchId: string,
     clipId: string,
-    fields: Partial<Pick<Branch["timeline"]["clips"][number], "caption" | "transition" | "notes">>,
+    fields: Partial<Branch["timeline"]["clips"][number]>,
   ) => void;
   logActivity: (event: Omit<ActivityEvent, "id" | "createdAt">) => void;
 };

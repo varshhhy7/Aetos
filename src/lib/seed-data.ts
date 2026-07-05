@@ -340,13 +340,37 @@ export const BRANCH_IDS = {
   founderFeedback: "branch-founder-feedback-cut",
 } as const;
 
+// The uploaded demo video was split into four pieces (public/demo/part-*.mp4).
+// Each story clip maps to one piece, so every branch renders the real footage —
+// the same source material, cut and styled differently per person's version.
+const SOURCE_BY_CLIP: Record<string, string> = {
+  clip_hook: "/demo/part-1.mp4",
+  clip_problem: "/demo/part-2.mp4",
+  clip_product: "/demo/part-3.mp4",
+  clip_testimonial: "/demo/part-4.mp4",
+  clip_cta: "/demo/part-1.mp4",
+};
+
+// Inject the shared source footage into a timeline's clips by role. Kept separate
+// from the timeline literals so the branch-specific edits (pacing, captions,
+// grade) stay readable above.
+function withSources(timeline: Timeline): Timeline {
+  return {
+    ...timeline,
+    clips: timeline.clips.map((clip) => ({
+      ...clip,
+      sourceUrl: clip.sourceUrl ?? SOURCE_BY_CLIP[clip.id],
+    })),
+  };
+}
+
 export const seedBranches: Branch[] = [
   {
     id: BRANCH_IDS.main,
     projectId: PROJECT_ID,
     name: "Main Cut",
     status: "approved",
-    timeline: mainCutTimeline,
+    timeline: withSources(mainCutTimeline),
     createdBy: "Mani",
     createdAt: "2026-06-20T09:15:00.000Z",
     updatedAt: "2026-06-20T09:15:00.000Z",
@@ -357,7 +381,7 @@ export const seedBranches: Branch[] = [
     name: "Fast Reel Cut",
     parentBranchId: BRANCH_IDS.main,
     status: "draft",
-    timeline: fastReelCutTimeline,
+    timeline: withSources(fastReelCutTimeline),
     createdBy: "Riya",
     createdAt: "2026-06-21T11:30:00.000Z",
     updatedAt: "2026-06-21T11:30:00.000Z",
@@ -368,7 +392,7 @@ export const seedBranches: Branch[] = [
     name: "Premium Investor Cut",
     parentBranchId: BRANCH_IDS.main,
     status: "draft",
-    timeline: premiumInvestorCutTimeline,
+    timeline: withSources(premiumInvestorCutTimeline),
     createdBy: "Priya",
     createdAt: "2026-06-22T14:00:00.000Z",
     updatedAt: "2026-06-22T14:00:00.000Z",
@@ -379,7 +403,7 @@ export const seedBranches: Branch[] = [
     name: "Founder Feedback Cut",
     parentBranchId: BRANCH_IDS.main,
     status: "draft",
-    timeline: founderFeedbackCutTimeline,
+    timeline: withSources(founderFeedbackCutTimeline),
     createdBy: "Zane",
     createdAt: "2026-06-23T16:45:00.000Z",
     updatedAt: "2026-06-23T16:45:00.000Z",

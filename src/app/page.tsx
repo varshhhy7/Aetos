@@ -6,6 +6,7 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { EtherealShadow } from "@/components/ui/etheral-shadow";
 import { Player } from "@remotion/player";
 import { BranchComposition } from "@/remotion/BranchComposition";
+import { BoxMark } from "@/components/ui/BoxMark";
 
 // Type definitions matching the Aetos data models
 interface GlobalStyle {
@@ -301,6 +302,13 @@ export default function VercelStyleLanding() {
         for (let j = 0; j < i; j++) {
           start += activeTimeline.clips[j].duration;
         }
+        const sourceUrl = 
+          clip.id === "c1" ? "/demo/part-1.mp4" :
+          clip.id === "c2" ? "/demo/part-2.mp4" :
+          clip.id === "c3" ? "/demo/part-3.mp4" :
+          clip.id === "c4" ? "/demo/part-4.mp4" :
+          "/demo/part-1.mp4";
+
         return {
           id: clip.id,
           name: clip.name,
@@ -310,6 +318,7 @@ export default function VercelStyleLanding() {
           order: i,
           caption: clip.caption,
           transition: clip.transition,
+          sourceUrl,
         };
       }),
       audio: {
@@ -508,15 +517,14 @@ export default function VercelStyleLanding() {
       {/* ---------- HEADER ---------- */}
       <header className="border-b border-[#1c1b19] bg-[#050505]/90 backdrop-blur-md sticky top-0 z-50">
         <div className="mx-auto max-w-[1400px] flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-2">
-            {/* Minimal App Icon */}
-            <div className="h-5 w-5 grid grid-cols-2 gap-0.5">
-              <div className="bg-[#f2a94e] rounded-[2px]" />
-              <div className="bg-[#f2a94e]/40 rounded-[2px]" />
-              <div className="bg-[#f2a94e]/40 rounded-[2px]" />
-              <div className="bg-[#f2a94e] rounded-[2px]" />
-            </div>
-            <span className="font-semibold tracking-tight text-white text-base">Aetos</span>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-2.5">
+              <BoxMark size={22} />
+              <span className="font-stencil text-[16px] text-white">aetos</span>
+            </Link>
+            <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest ml-3 hidden md:inline">
+              version control for video teams
+            </span>
           </div>
 
           {/* Navigation links - matching references */}
