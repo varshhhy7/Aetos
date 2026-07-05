@@ -31,6 +31,7 @@ export function VideoPreview({ branch }: { branch: Branch }) {
           compositionHeight={720}
           style={{ width: "100%", height: "100%" }}
           controls
+          autoPlay={true}
           loop
         />
 

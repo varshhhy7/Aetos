@@ -1,5 +1,5 @@
 "use client";
-
+ 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
@@ -7,6 +7,7 @@ import { EtherealShadow } from "@/components/ui/etheral-shadow";
 import { Player } from "@remotion/player";
 import { BranchComposition } from "@/remotion/BranchComposition";
 import { BoxMark } from "@/components/ui/BoxMark";
+import { Upload, GitBranch, ShieldCheck, GitMerge, Database } from "lucide-react";
 
 // Type definitions matching the Aetos data models
 interface GlobalStyle {
@@ -229,6 +230,737 @@ const outcomeCards = [
   },
 ];
 
+function TimelineParserVisualizer() {
+  const [logs, setLogs] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const rawLogs = [
+      "⚡ Initializing Timeline Import Engine...",
+      "📂 Reading file: premiere_project_v3.xml",
+      "🔍 Identifying video tracks: 3 tracks found",
+      "🎵 Identifying audio tracks: 2 tracks found",
+      "⚙️ Decoding XML clip metadata...",
+      "✓ Parsed clip_01_hook.mp4 (00:00:08)",
+      "✓ Parsed clip_02_problem.mp4 (00:00:12)",
+      "✓ Parsed clip_03_product_demo.mp4 (00:00:18)",
+      "✓ Parsed audio_track_music.wav (00:01:00)",
+      "🎉 Timeline synced. Ready for Sandbox."
+    ];
+
+    let currentLogIndex = 0;
+    setLogs([rawLogs[0]]);
+    
+    const interval = setInterval(() => {
+      currentLogIndex = (currentLogIndex + 1) % rawLogs.length;
+      if (currentLogIndex === 0) {
+        setLogs([rawLogs[0]]);
+      } else {
+        setLogs((prev) => [...prev.slice(-4), rawLogs[currentLogIndex]]);
+      }
+    }, 1200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="h-full flex flex-col justify-between p-2 font-mono text-[10px]">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+          <span className="text-[#f2a94e] font-semibold text-xs tracking-wider flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#f2a94e] animate-ping" />
+            TIMELINE_PARSER_ENGINE
+          </span>
+          <span className="text-zinc-600">INPUT_STAGE</span>
+        </div>
+        
+        {/* Mock Timeline Tracks */}
+        <div className="relative border border-zinc-900 bg-black/40 rounded-lg p-3 space-y-2.5 overflow-hidden">
+          {/* Scanning line */}
+          <motion.div 
+            className="absolute top-0 bottom-0 w-[1.5px] bg-[#f2a94e] shadow-[0_0_10px_#f2a94e]"
+            animate={{ left: ["0%", "100%", "0%"] }}
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+          />
+
+          {/* Video track */}
+          <div className="flex items-center gap-2">
+            <span className="w-12 text-zinc-500 font-semibold uppercase tracking-wider text-[8px]">Video V1</span>
+            <div className="flex-1 grid grid-cols-5 gap-1.5 h-6">
+              <div className="bg-[#f2a94e]/10 border border-[#f2a94e]/30 rounded flex items-center justify-center text-[#f2a94e]/80 text-[8px] font-semibold">Hook</div>
+              <div className="bg-[#f2a94e]/10 border border-[#f2a94e]/30 rounded col-span-2 flex items-center justify-center text-[#f2a94e]/80 text-[8px] font-semibold font-sans">Problem</div>
+              <div className="bg-[#f2a94e]/10 border border-[#f2a94e]/30 rounded col-span-2 flex items-center justify-center text-[#f2a94e]/80 text-[8px] font-semibold font-sans">Demo</div>
+            </div>
+          </div>
+
+          {/* Audio track */}
+          <div className="flex items-center gap-2">
+            <span className="w-12 text-zinc-500 font-semibold uppercase tracking-wider text-[8px]">Audio A1</span>
+            <div className="flex-1 h-5 bg-purple-950/10 border border-purple-500/20 rounded relative flex items-center overflow-hidden">
+              {/* Waveform graphic */}
+              <div className="absolute inset-0 flex items-center justify-around px-2 opacity-40">
+                {[4, 10, 6, 12, 8, 4, 14, 10, 6, 8, 12, 4, 10, 6, 14, 8, 4, 10, 6].map((h, i) => (
+                  <div key={i} className="w-[1.5px] bg-purple-400 rounded-full" style={{ height: `${h * 6}%` }} />
+                ))}
+              </div>
+              <span className="absolute left-2 text-purple-400 text-[8px] font-semibold">BGM_music.wav</span>
+            </div>
+          </div>
+
+          {/* Captions track */}
+          <div className="flex items-center gap-2">
+            <span className="w-12 text-zinc-500 font-semibold uppercase tracking-wider text-[8px]">Text T1</span>
+            <div className="flex-1 grid grid-cols-4 gap-1.5 h-4">
+              <div className="bg-zinc-900 border border-zinc-800 rounded text-[7px] text-zinc-400 flex items-center justify-center font-sans italic">"Aetos is..."</div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded col-span-2 text-[7px] text-zinc-400 flex items-center justify-center font-sans italic">"Versioned sandboxes..."</div>
+              <div className="bg-zinc-900 border border-zinc-800 rounded text-[7px] text-zinc-400 flex items-center justify-center font-sans italic">"Run it..."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Output Console Log */}
+      <div className="mt-4 bg-black/60 border border-zinc-900 rounded-lg p-3 h-28 overflow-y-auto space-y-1">
+        {logs.map((log, idx) => (
+          <div key={idx} className={`leading-relaxed ${log.includes("✓") || log.includes("🎉") ? "text-[#f2a94e]" : "text-zinc-500"}`}>
+            {log}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BranchingSandboxVisualizer() {
+  return (
+    <div className="h-full flex flex-col justify-between p-2 font-mono text-[10px]">
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-3">
+        <span className="text-purple-400 font-semibold text-xs tracking-wider flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-purple-500 animate-ping" />
+          ARENA_BRANCHING_ENG
+        </span>
+        <span className="text-zinc-600">SANDBOX_STAGE</span>
+      </div>
+
+      <div className="relative flex-1 flex flex-col items-center justify-center min-h-[160px] bg-zinc-950/40 border border-zinc-900/60 rounded-xl p-4 overflow-hidden">
+        {/* Branching SVG */}
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 380 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* Main trunk */}
+          <path d="M 20 90 L 100 90" stroke="#4b5563" strokeWidth="2" strokeDasharray="4 2" />
+          <circle cx="100" cy="90" r="4" fill="#a78bfa" className="animate-pulse" />
+          
+          {/* Branch 1 (Viral Hook) */}
+          <path d="M 100 90 C 140 90, 160 30, 200 30 L 300 30" stroke="#a78bfa" strokeWidth="2" />
+          <circle cx="300" cy="30" r="4" fill="#a78bfa" />
+          <text x="210" y="22" fill="#a78bfa" className="text-[8px] font-bold">BRANCH: viral-hook-cut</text>
+          
+          {/* Branch 2 (Main continue) */}
+          <path d="M 100 90 L 300 90" stroke="#4b5563" strokeWidth="2" strokeDasharray="3 3" />
+          <circle cx="300" cy="90" r="4" fill="#4b5563" />
+          <text x="210" y="82" fill="#6b7280" className="text-[8px] font-bold">BRANCH: main-backup</text>
+          
+          {/* Branch 3 (Fast Cinematic) */}
+          <path d="M 100 90 C 140 90, 160 150, 200 150 L 300 150" stroke="#a78bfa" strokeWidth="2" />
+          <circle cx="300" cy="150" r="4" fill="#a78bfa" />
+          <text x="210" y="142" fill="#a78bfa" className="text-[8px] font-bold">BRANCH: fast-cinematic</text>
+
+          {/* Animated pulses traveling along branches */}
+          <motion.circle 
+            r="3" 
+            fill="#fff" 
+            animate={{ 
+              cx: [100, 140, 180, 200, 260, 300], 
+              cy: [90, 80, 50, 30, 30, 30] 
+            }}
+            transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+          />
+          <motion.circle 
+            r="3" 
+            fill="#fff" 
+            animate={{ 
+              cx: [100, 140, 180, 200, 260, 300], 
+              cy: [90, 100, 130, 150, 150, 150] 
+            }}
+            transition={{ repeat: Infinity, duration: 3.5, ease: "linear", delay: 1 }}
+          />
+        </svg>
+
+        {/* Small agent status cards floating over the svg */}
+        <div className="absolute left-4 top-2 text-[8px] bg-zinc-900 border border-zinc-800 text-zinc-400 p-1.5 rounded shadow">
+          MAIN_TRUNK [HEAD]
+        </div>
+
+        <div className="absolute right-4 top-1.5 text-[8px] bg-purple-950/20 border border-purple-500/30 text-purple-300 p-2 rounded shadow flex flex-col gap-1 w-24">
+          <div className="font-semibold flex items-center justify-between">
+            <span>ViralAgent</span>
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+          </div>
+          <span className="text-[7px] text-zinc-500">Pacing: High (120 bpm)</span>
+          <span className="text-[7px] text-zinc-500">Cuts: 18 edits</span>
+        </div>
+
+        <div className="absolute right-4 bottom-1.5 text-[8px] bg-purple-950/20 border border-purple-500/30 text-purple-300 p-2 rounded shadow flex flex-col gap-1 w-24">
+          <div className="font-semibold flex items-center justify-between">
+            <span>CinemaAgent</span>
+            <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+          </div>
+          <span className="text-[7px] text-zinc-500">Pacing: Moderate</span>
+          <span className="text-[7px] text-zinc-500">Grade: Warm</span>
+        </div>
+      </div>
+      
+      <div className="mt-3 text-[9px] text-zinc-500 leading-relaxed bg-zinc-950/80 p-2 rounded-lg border border-zinc-900 font-sans">
+        💡 <strong>Parallel Editing:</strong> Multiple agents spin up individual dockerized container sandboxes, checkout branch edits, and execute timeline modifications independently.
+      </div>
+    </div>
+  );
+}
+
+function VerifierJudgesVisualizer() {
+  const [scores, setScores] = useState({ hook: 10, pacing: 10, brand: 10 });
+  const [isScanning, setIsScanning] = useState(true);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isScanning) {
+      timer = setTimeout(() => {
+        setScores({ hook: 94, pacing: 88, brand: 96 });
+        setIsScanning(false);
+      }, 2000);
+    } else {
+      timer = setTimeout(() => {
+        setScores({ hook: 10, pacing: 10, brand: 10 });
+        setIsScanning(true);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [isScanning]);
+
+  return (
+    <div className="h-full flex flex-col justify-between p-2 font-mono text-[10px]">
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-3">
+        <span className="text-emerald-400 font-semibold text-xs tracking-wider flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          AUTOMATED_VERIFIERS
+        </span>
+        <span className="text-zinc-600">VERDICT_STAGE</span>
+      </div>
+
+      <div className="flex-1 bg-zinc-950/40 border border-zinc-900/60 rounded-xl p-4 relative overflow-hidden space-y-4">
+        {isScanning && (
+          <div className="absolute inset-0 bg-emerald-500/5 flex items-center justify-center z-10 pointer-events-none">
+            <div className="text-emerald-400 font-bold uppercase tracking-widest text-[9px] animate-pulse">
+              🔍 SCANNING TIMELINE METRICS...
+            </div>
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-500/30 animate-[scan_2s_infinite]" />
+          </div>
+        )}
+
+        {/* Scores list */}
+        <div className="space-y-3">
+          {/* Hook score */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-zinc-400">
+              <span>🧲 Hook Impact Score (first 3s)</span>
+              <span className={isScanning ? "text-zinc-600" : "text-emerald-400 font-bold"}>
+                {isScanning ? "CALCULATING..." : `${scores.hook}%`}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                initial={{ width: "0%" }}
+                animate={{ width: isScanning ? "15%" : `${scores.hook}%` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+
+          {/* Pacing score */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-zinc-400">
+              <span>🥁 Audio-to-Visual Beat Match</span>
+              <span className={isScanning ? "text-zinc-600" : "text-emerald-400 font-bold"}>
+                {isScanning ? "CALCULATING..." : `${scores.pacing}%`}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                initial={{ width: "0%" }}
+                animate={{ width: isScanning ? "10%" : `${scores.pacing}%` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+
+          {/* Brand score */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-zinc-400">
+              <span>🛡️ Brand Guidelines & Font Compliance</span>
+              <span className={isScanning ? "text-zinc-600" : "text-emerald-400 font-bold"}>
+                {isScanning ? "CALCULATING..." : `${scores.brand}%`}
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-zinc-900 rounded-full overflow-hidden">
+              <motion.div 
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500"
+                initial={{ width: "0%" }}
+                animate={{ width: isScanning ? "25%" : `${scores.brand}%` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Global Verdict output */}
+        {!isScanning && (
+          <div className="mt-4 flex items-center justify-between p-2.5 rounded bg-emerald-950/10 border border-emerald-500/20 text-emerald-400">
+            <span className="font-semibold text-[9px] tracking-widest">VERDICT: PASSED STYLE AUDIT</span>
+            <span className="text-[10px]">🟢 92.6% STRENGTH</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function DiffMergeVisualizer() {
+  const [merged, setMerged] = useState(false);
+  const [merging, setMerging] = useState(false);
+
+  const handleMerge = () => {
+    if (merging || merged) return;
+    setMerging(true);
+    setTimeout(() => {
+      setMerging(false);
+      setMerged(true);
+    }, 1800);
+  };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (merged) {
+      timer = setTimeout(() => {
+        setMerged(false);
+      }, 5000);
+    }
+    return () => clearTimeout(timer);
+  }, [merged]);
+
+  return (
+    <div className="h-full flex flex-col justify-between p-2 font-mono text-[10px]">
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-3">
+        <span className="text-[#f2a94e] font-semibold text-xs tracking-wider flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-[#f2a94e] animate-ping" />
+          DIFF_MERGE_CONTROL
+        </span>
+        <span className="text-zinc-600">MERGE_STAGE</span>
+      </div>
+
+      <div className="flex-1 bg-zinc-950/40 border border-zinc-900/60 rounded-xl p-4 space-y-4">
+        {/* Side by side diff views */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Main timeline */}
+          <div className="space-y-1.5">
+            <span className="text-zinc-500 uppercase tracking-widest text-[8px] block">Main Cut</span>
+            <div className="border border-zinc-900 bg-black/60 rounded p-2 space-y-1.5">
+              <div className="bg-zinc-800 text-zinc-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>01_hook.mp4</span>
+                <span className="text-[7px] text-zinc-600">8.0s</span>
+              </div>
+              <div className="bg-red-950/20 border border-red-500/30 text-red-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>02_old_pacing.mp4</span>
+                <span className="text-[7px] text-red-500/70">-12.0s</span>
+              </div>
+              <div className="bg-zinc-800 text-zinc-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>03_product_demo.mp4</span>
+                <span className="text-[7px] text-zinc-600">18.0s</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Sandbox differences */}
+          <div className="space-y-1.5">
+            <span className="text-purple-400 uppercase tracking-widest text-[8px] block">Viral Sandbox Diff</span>
+            <div className="border border-zinc-900 bg-black/60 rounded p-2 space-y-1.5">
+              <div className="bg-zinc-800 text-zinc-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>01_hook.mp4</span>
+                <span className="text-[7px] text-zinc-600">8.0s</span>
+              </div>
+              <div className="bg-emerald-950/20 border border-emerald-500/30 text-emerald-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>02_viral_hook.mp4</span>
+                <span className="text-[7px] text-emerald-500/70">+4.5s</span>
+              </div>
+              <div className="bg-zinc-800 text-zinc-400 px-1.5 py-1 rounded text-[8px] flex items-center justify-between">
+                <span>03_product_demo.mp4</span>
+                <span className="text-[7px] text-zinc-600">18.0s</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Button container */}
+        <div className="flex items-center justify-between pt-2 border-t border-zinc-900/60">
+          <span className="text-zinc-500 text-[8px]">COMPARING COMMITS: v2.4.1...v2.4.2</span>
+          
+          <button 
+            onClick={handleMerge}
+            disabled={merging || merged}
+            className={`px-3 py-1.5 rounded font-bold transition-all text-[9px] tracking-wider uppercase flex items-center gap-1.5 cursor-pointer ${
+              merged 
+                ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 cursor-default"
+                : merging 
+                  ? "bg-zinc-800 border border-zinc-700 text-zinc-500 cursor-wait animate-pulse"
+                  : "bg-[#f2a94e] hover:bg-amber-400 text-black shadow-lg shadow-[#f2a94e]/10 hover:shadow-[#f2a94e]/20"
+            }`}
+          >
+            {merged ? (
+              <>✓ MERGED SUCCESS</>
+            ) : merging ? (
+              <>MERGING...</>
+            ) : (
+              <>MERGE TO MAIN</>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MemoryRetentionVisualizer() {
+  const [profileSynced, setProfileSynced] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProfileSynced((prev) => !prev);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="h-full flex flex-col justify-between p-2 font-mono text-[10px]">
+      <div className="flex items-center justify-between border-b border-zinc-800 pb-2 mb-3">
+        <span className="text-blue-400 font-semibold text-xs tracking-wider flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
+          FEEDBACK_COMPOUNDER
+        </span>
+        <span className="text-zinc-600">MEMORY_STAGE</span>
+      </div>
+
+      <div className="flex-1 bg-zinc-950/40 border border-zinc-900/60 rounded-xl p-4 relative overflow-hidden flex flex-col justify-between gap-3">
+        {/* Node graph or vector field mockup */}
+        <div className="relative h-20 bg-black/40 border border-zinc-900/80 rounded-lg overflow-hidden flex items-center justify-center">
+          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:12px_12px]" />
+          
+          {/* Animated floating node particles */}
+          <div className="absolute flex gap-8 items-center justify-around w-full px-4">
+            <motion.div 
+              className="w-2.5 h-2.5 rounded-full bg-blue-500/80 shadow-[0_0_8px_#3b82f6]"
+              animate={profileSynced ? { scale: [1, 1.4, 1], y: [0, -5, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
+            <motion.div 
+              className="w-1.5 h-1.5 rounded-full bg-blue-400/60"
+              animate={profileSynced ? { scale: [1, 1.3, 1], y: [0, 6, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 2.5 }}
+            />
+            <motion.div 
+              className="w-2 h-2 rounded-full bg-cyan-500/70"
+              animate={profileSynced ? { scale: [1, 1.2, 1], y: [0, -8, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 1.8 }}
+            />
+            <motion.div 
+              className="w-3 h-3 rounded-full bg-indigo-500/80 shadow-[0_0_10px_#6366f1]"
+              animate={profileSynced ? { scale: [1, 1.5, 1], y: [0, 4, 0] } : {}}
+              transition={{ repeat: Infinity, duration: 3 }}
+            />
+          </div>
+
+          <span className="text-[8px] text-zinc-500 uppercase tracking-widest relative z-10 font-bold bg-black/60 px-2 py-1 border border-zinc-900/80 rounded">
+            {profileSynced ? "💾 CONSOLIDATING PREFERENCE VECTOR" : "🔄 ANALYZING EDIT BEHAVIORS"}
+          </span>
+        </div>
+
+        {/* Sync panel logs */}
+        <div className="space-y-1.5 text-[8px] bg-zinc-950 p-2 rounded border border-zinc-900 text-zinc-500">
+          <div className="flex justify-between">
+            <span>Pacing Weight Adjust:</span>
+            <span className="text-blue-400">Cinematic (0.52 → 0.78)</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Hook Cutoff:</span>
+            <span className="text-blue-400">&lt; 4.0s Target (Locked)</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Caption Style Preference:</span>
+            <span className="text-blue-400">Bold High Contrast (Cached)</span>
+          </div>
+          <div className="flex justify-between items-center border-t border-zinc-900/60 pt-1.5 mt-1.5 text-[#f2a94e]">
+            <span>MEMORY POOL STATUS:</span>
+            <span className="font-bold flex items-center gap-1">
+              <span className="w-1 h-1 bg-green-500 rounded-full" />
+              UP-TO-DATE
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WorkflowFlowchart() {
+  const [activeStage, setActiveStage] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(() => {
+      setActiveStage((prev) => (prev + 1) % 5);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, activeStage]);
+
+  const stages = [
+    {
+      step: "01",
+      title: "UPLOAD TIMELINE",
+      desc: "Import raw video files or XML timelines directly from Premiere/FCP.",
+      badge: "INPUT",
+      color: "from-[#f2a94e] to-amber-600",
+      accent: "#f2a94e",
+      icon: Upload
+    },
+    {
+      step: "02",
+      title: "ARENA BRANCHING",
+      desc: "VideoAgents generate parallel sandbox branches (Viral, Story, Brand Cuts).",
+      badge: "SANDBOX",
+      color: "from-purple-500 to-indigo-600",
+      accent: "#a78bfa",
+      icon: GitBranch
+    },
+    {
+      step: "03",
+      title: "VERIFIER JUDGES",
+      desc: "Automatic verifiers score each cut against brand style parameters.",
+      badge: "VERDICT",
+      color: "from-emerald-500 to-teal-600",
+      accent: "#10b981",
+      icon: ShieldCheck
+    },
+    {
+      step: "04",
+      title: "HUMAN APPROVAL",
+      desc: "Editors compare differences side-by-side and merge edits to Main.",
+      badge: "MERGE",
+      color: "from-[#f2a94e] to-purple-500",
+      accent: "#f2a94e",
+      icon: GitMerge
+    },
+    {
+      step: "05",
+      title: "MEMORY RETENTION",
+      desc: "Approved choices update preference vectors for the next agent run.",
+      badge: "MEMORY",
+      color: "from-blue-500 to-cyan-600",
+      accent: "#3b82f6",
+      icon: Database
+    }
+  ];
+
+  const renderVisualizer = () => {
+    switch (activeStage) {
+      case 0:
+        return <TimelineParserVisualizer />;
+      case 1:
+        return <BranchingSandboxVisualizer />;
+      case 2:
+        return <VerifierJudgesVisualizer />;
+      case 3:
+        return <DiffMergeVisualizer />;
+      case 4:
+        return <MemoryRetentionVisualizer />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="relative font-mono text-zinc-400 select-none">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-purple-950/5 via-[#f2a94e]/5 to-blue-950/5 blur-[160px] pointer-events-none" />
+
+      {/* Main Grid Wrapper */}
+      <div className="grid lg:grid-cols-12 gap-8 items-stretch relative z-10">
+        
+        {/* Left Column: Vertical Pipeline (5 columns) */}
+        <div className="lg:col-span-5 flex flex-col gap-3">
+          {stages.map((stage, idx) => {
+            const isActive = activeStage === idx;
+            const Icon = stage.icon;
+            return (
+              <div
+                key={stage.step}
+                onClick={() => {
+                  setActiveStage(idx);
+                  setIsAutoPlaying(false);
+                }}
+                className={`relative group cursor-pointer text-left bg-[#0c0b0b] border rounded-xl p-5 transition-all duration-300 flex items-start gap-4 ${
+                  isActive
+                    ? "border-zinc-755 shadow-[0_0_20px_rgba(242,169,78,0.02)] bg-[#0e0d0d]"
+                    : "border-[#1c1b19] hover:border-zinc-800 opacity-60 hover:opacity-85"
+                }`}
+              >
+                {/* Active left glow accent bar */}
+                <div
+                  className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-xl transition-all duration-300 ${
+                    isActive ? `bg-gradient-to-b ${stage.color}` : "bg-transparent"
+                  }`}
+                />
+
+                {/* Icon Circle */}
+                <div
+                  className={`p-2.5 rounded-lg border transition-all duration-300 ${
+                    isActive
+                      ? "bg-zinc-900 border-zinc-700 text-white"
+                      : "bg-zinc-950 border-zinc-900 text-zinc-500 group-hover:text-zinc-400"
+                  }`}
+                  style={{ color: isActive ? stage.accent : undefined }}
+                >
+                  <Icon className="w-5 h-5" />
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 space-y-1">
+                  <div className="flex justify-between items-center text-[10px] text-zinc-500 font-semibold">
+                    <span>STAGE {stage.step}</span>
+                    <span
+                      className={`px-2 py-0.5 rounded text-[8px] tracking-wider font-bold ${
+                        isActive ? "bg-zinc-900" : "bg-zinc-950"
+                      }`}
+                      style={{ color: isActive ? stage.accent : undefined }}
+                    >
+                      {stage.badge}
+                    </span>
+                  </div>
+
+                  <h3
+                    className={`text-sm sm:text-base font-bold tracking-tight transition-colors duration-300 ${
+                      isActive ? "text-white" : "text-zinc-500"
+                    }`}
+                  >
+                    {stage.title}
+                  </h3>
+                  
+                  <p className="text-[11px] text-zinc-500 leading-relaxed font-sans mt-1">
+                    {stage.desc}
+                  </p>
+
+                  {/* Progressive loading timer bar when auto-playing */}
+                  {isActive && isAutoPlaying && (
+                    <div className="h-[1.5px] w-full bg-zinc-900 rounded-full overflow-hidden mt-3.5">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-amber-500 to-[#f2a94e]"
+                        initial={{ width: "0%" }}
+                        animate={{ width: "100%" }}
+                        key={idx} // resets animation when active stage changes
+                        transition={{ duration: 5, ease: "linear" }}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Right Column: Live Sandbox Display (7 columns) */}
+        <div className="lg:col-span-7 flex flex-col justify-between bg-[#0a0a0a]/90 border border-zinc-800/80 rounded-2xl p-6 relative overflow-hidden shadow-2xl min-h-[400px]">
+          {/* Subtle grid pattern background */}
+          <div className="absolute inset-0 opacity-[0.02] bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none" />
+          
+          <div className="relative z-10 flex-1 flex flex-col justify-between">
+            {/* Visualizer output header */}
+            <div className="flex items-center justify-between text-[9px] text-zinc-500 border-b border-zinc-900 pb-3 mb-4 font-mono">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span>AETOS PIPELINE KERNEL STATE</span>
+              </div>
+              <div>STAGE_{activeStage + 1}_PREVIEW</div>
+            </div>
+
+            {/* Dynamic visualizer rendering */}
+            <div className="flex-1 flex flex-col justify-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStage}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
+                  transition={{ duration: 0.25 }}
+                  className="w-full"
+                >
+                  {renderVisualizer()}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Interactive horizontal tracking pipe */}
+      <div className="mt-8 bg-zinc-950/60 border border-zinc-900/40 rounded-xl p-4 flex items-center justify-between text-[9px] text-zinc-600 relative z-10">
+        <div className="flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-[#f2a94e] rounded-full animate-ping" />
+          <span>PIPELINE ENGINE</span>
+        </div>
+        <div className="hidden xl:block font-mono tracking-widest text-[8px] relative w-1/2">
+          <div className="flex justify-between items-center w-full text-zinc-800">
+            <span>[MAIN]</span>
+            <div className="flex-1 h-[1px] bg-zinc-900 mx-2 relative overflow-hidden">
+              <div 
+                className={`h-full absolute transition-all duration-500 bg-[#f2a94e] ${
+                  activeStage >= 1 ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+            <span>[ARENA_BRANCHES]</span>
+            <div className="flex-1 h-[1px] bg-zinc-900 mx-2 relative overflow-hidden">
+              <div 
+                className={`h-full absolute transition-all duration-500 bg-[#f2a94e] ${
+                  activeStage >= 2 ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+            <span>[THE_JUDGES]</span>
+            <div className="flex-1 h-[1px] bg-zinc-900 mx-2 relative overflow-hidden">
+              <div 
+                className={`h-full absolute transition-all duration-500 bg-[#f2a94e] ${
+                  activeStage >= 3 ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+            <span>[MERGE_CONTROLS]</span>
+            <div className="flex-1 h-[1px] bg-zinc-900 mx-2 relative overflow-hidden">
+              <div 
+                className={`h-full absolute transition-all duration-500 bg-[#f2a94e] ${
+                  activeStage >= 4 ? 'w-full' : 'w-0'
+                }`}
+              />
+            </div>
+            <span>[REWARD_LOOP]</span>
+          </div>
+        </div>
+        <div className="text-[8px] text-[#f2a94e]">
+          CYCLE: {activeStage + 1}/5
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function VercelStyleLanding() {
   const [branches, setBranches] = useState<Record<string, Timeline>>(INITIAL_BRANCHES);
   const [selectedBranchId, setSelectedBranchId] = useState<string>("main");
@@ -257,6 +989,17 @@ export default function VercelStyleLanding() {
     confidence: 0.52,
     brandMatchScore: 55,
   });
+
+  const [activeStep, setActiveStep] = useState(0);
+  const [isHoveredStep, setIsHoveredStep] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isHoveredStep !== null) return;
+    const interval = setInterval(() => {
+      setActiveStep((prev) => (prev + 1) % 5);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isHoveredStep]);
 
   // Auto-playing storyboard state for Style Memory section
   const [storyStep, setStoryStep] = useState(0);
@@ -845,6 +1588,7 @@ export default function VercelStyleLanding() {
                       compositionHeight={720}
                       style={{ width: "100%", height: "100%" }}
                       controls
+                      autoPlay={true}
                       loop
                     />
                   </div>
@@ -1112,9 +1856,9 @@ export default function VercelStyleLanding() {
       </section>
 
       {/* ---------- HOW IT WORKS ---------- */}
-      <section id="how-it-works" className="border-t border-[#1c1b19] py-24 bg-[#121110]">
+      <section id="how-it-works" className="border-t border-[#1c1b19] py-24 bg-[#080807]">
         <div className="mx-auto max-w-[1400px] px-6">
-          <div className="max-w-3xl space-y-4 mb-12">
+          <div className="max-w-3xl space-y-4 mb-16">
             <span className="text-[10px] font-mono text-[#f2a94e] uppercase tracking-widest block">How It Works</span>
             <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-white leading-tight">
               From raw footage to learning loop.
@@ -1124,28 +1868,7 @@ export default function VercelStyleLanding() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-5 gap-3">
-            {workflowSteps.map((step, index) => (
-              <motion.div
-                key={step.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.45, delay: index * 0.06 }}
-                className="border border-[#1c1b19] bg-[#0c0b0b] rounded-xl p-5 min-h-[190px] flex flex-col justify-between"
-              >
-                <div className="text-[10px] font-mono text-zinc-500">0{index + 1}</div>
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-white">{step.title}</h3>
-                  <p className="text-xs text-zinc-500 leading-relaxed">{step.body}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="mt-8 border border-[#1c1b19] bg-black/30 rounded-xl px-4 py-3 text-[11px] font-mono text-zinc-400 overflow-x-auto">
-            Upload -&gt; Agents -&gt; Branches -&gt; Verifier -&gt; Approval -&gt; Learning
-          </div>
+          <WorkflowFlowchart />
         </div>
       </section>
 
