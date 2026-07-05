@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Whiteboard reward loop architecture diagram for Aetos">
+  <rect width="1280" height="720" fill="#fbfaf6"/>
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M2,2 L12,7 L2,12" fill="none" stroke="#2f2a24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <text x="48" y="64" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#24201b">Reward / RL-ready loop</text>
+  <text x="50" y="96" font-family="monospace" font-size="16" fill="#7d7367">MVP captures reward signals; real RL training is future work</text>
+
+  <g fill="#fffdf7" stroke="#2f2a24" stroke-width="2.5">
+    <rect x="90" y="295" width="190" height="86" rx="18"/>
+    <rect x="378" y="160" width="205" height="86" rx="18"/>
+    <rect x="378" y="430" width="205" height="86" rx="18"/>
+    <rect x="682" y="160" width="205" height="86" rx="18"/>
+    <rect x="682" y="430" width="205" height="86" rx="18"/>
+    <rect x="992" y="295" width="205" height="86" rx="18"/>
+  </g>
+
+  <g font-family="Verdana, sans-serif" fill="#24201b">
+    <text x="122" y="330" font-size="20" font-weight="700">Agent attempt</text>
+    <text x="122" y="356" font-size="14">branch edit plan</text>
+    <text x="414" y="195" font-size="20" font-weight="700">Verifier</text>
+    <text x="414" y="221" font-size="14">hook / pacing / brand</text>
+    <text x="414" y="465" font-size="20" font-weight="700">Human review</text>
+    <text x="414" y="491" font-size="14">approve / reject / merge</text>
+    <text x="716" y="195" font-size="20" font-weight="700">Reward signal</text>
+    <text x="716" y="221" font-size="14">dense + human labels</text>
+    <text x="716" y="465" font-size="20" font-weight="700">Memory</text>
+    <text x="716" y="491" font-size="14">approved patterns</text>
+    <text x="1026" y="330" font-size="20" font-weight="700">Future agent</text>
+    <text x="1026" y="356" font-size="14">better next run</text>
+  </g>
+
+  <g fill="none" stroke="#2f2a24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)">
+    <path d="M280 320 C335 270 350 215 378 203"/>
+    <path d="M280 356 C335 405 350 460 378 473"/>
+    <path d="M583 203 C622 203 645 203 682 203"/>
+    <path d="M583 473 C625 455 650 430 682 410"/>
+    <path d="M785 246 C785 320 785 365 785 430"/>
+    <path d="M887 473 C950 455 985 395 992 342"/>
+    <path d="M992 334 C940 270 898 235 887 203"/>
+  </g>
+
+  <g font-family="monospace" font-size="15" fill="#7d7367">
+    <text x="120" y="605">reward = verifier score + approval bonus - rejection penalty</text>
+    <text x="120" y="635">partial merge gives positive reward only to selected edits</text>
+  </g>
+  <path d="M100 575 C370 560 695 570 1000 562" fill="none" stroke="#f2a94e" stroke-width="5" stroke-linecap="round"/>
+</svg>

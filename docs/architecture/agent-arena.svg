@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Whiteboard agent arena architecture diagram for Aetos">
+  <rect width="1280" height="720" fill="#fbfaf6"/>
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M2,2 L12,7 L2,12" fill="none" stroke="#2f2a24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <text x="48" y="64" font-family="Verdana, sans-serif" font-size="34" font-weight="700" fill="#24201b">Agent arena</text>
+  <text x="50" y="96" font-family="monospace" font-size="16" fill="#7d7367">different agents, different strategies, one stronger final cut</text>
+
+  <g fill="#fffdf7" stroke="#2f2a24" stroke-width="2.5">
+    <rect x="80" y="300" width="210" height="90" rx="18"/>
+    <rect x="398" y="135" width="200" height="90" rx="18"/>
+    <rect x="398" y="275" width="200" height="90" rx="18"/>
+    <rect x="398" y="415" width="200" height="90" rx="18"/>
+    <rect x="702" y="135" width="220" height="90" rx="18"/>
+    <rect x="702" y="275" width="220" height="90" rx="18"/>
+    <rect x="702" y="415" width="220" height="90" rx="18"/>
+    <rect x="1010" y="275" width="200" height="90" rx="18"/>
+  </g>
+
+  <g font-family="Verdana, sans-serif" fill="#24201b">
+    <text x="118" y="336" font-size="21" font-weight="700">Current Cut</text>
+    <text x="118" y="362" font-size="14">timeline metadata</text>
+    <text x="433" y="170" font-size="20" font-weight="700">Viral Agent</text>
+    <text x="430" y="196" font-size="14">fast hook</text>
+    <text x="425" y="310" font-size="20" font-weight="700">Story Agent</text>
+    <text x="426" y="336" font-size="14">narrative order</text>
+    <text x="425" y="450" font-size="20" font-weight="700">Brand Agent</text>
+    <text x="426" y="476" font-size="14">safe style</text>
+    <text x="735" y="170" font-size="20" font-weight="700">Branch plan</text>
+    <text x="735" y="196" font-size="14">edits + score</text>
+    <text x="735" y="310" font-size="20" font-weight="700">Branch plan</text>
+    <text x="735" y="336" font-size="14">edits + score</text>
+    <text x="735" y="450" font-size="20" font-weight="700">Branch plan</text>
+    <text x="735" y="476" font-size="14">edits + score</text>
+    <text x="1044" y="310" font-size="20" font-weight="700">Aetos</text>
+    <text x="1044" y="336" font-size="14">branches + compare</text>
+  </g>
+
+  <g fill="none" stroke="#2f2a24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)">
+    <path d="M290 333 C340 250 360 190 398 180"/>
+    <path d="M290 345 C335 330 358 320 398 320"/>
+    <path d="M290 360 C340 430 360 455 398 460"/>
+    <path d="M598 180 C640 180 660 180 702 180"/>
+    <path d="M598 320 C640 320 660 320 702 320"/>
+    <path d="M598 460 C640 460 660 460 702 460"/>
+    <path d="M922 180 C980 205 1005 250 1010 306"/>
+    <path d="M922 320 C960 320 980 320 1010 320"/>
+    <path d="M922 460 C980 435 1005 390 1010 344"/>
+  </g>
+
+  <g font-family="monospace" font-size="15" fill="#7d7367">
+    <text x="406" y="580">Viral: hook 8s -> 3s, CTA earlier</text>
+    <text x="406" y="610">Story: proof before product demo</text>
+    <text x="406" y="640">Brand: reduce music intensity, clean transitions</text>
+  </g>
+  <path d="M385 550 C570 540 760 548 920 542" fill="none" stroke="#f2a94e" stroke-width="5" stroke-linecap="round"/>
+</svg>
