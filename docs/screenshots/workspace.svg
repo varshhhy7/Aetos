@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-label="Aetos workspace screenshot map">
+  <rect width="1280" height="760" fill="#050505"/>
+  <rect x="28" y="28" width="1224" height="704" rx="16" fill="#121110" stroke="#2c2927"/>
+  <rect x="28" y="28" width="258" height="704" rx="16" fill="#0c0b0b" stroke="#2c2927"/>
+  <rect x="994" y="28" width="258" height="704" rx="16" fill="#0c0b0b" stroke="#2c2927"/>
+  <text x="58" y="74" fill="#f2a94e" font-family="monospace" font-size="16">PROJECT MEDIA POOL</text>
+  <rect x="58" y="102" width="198" height="104" rx="12" fill="#050505" stroke="#2c2927"/>
+  <text x="72" y="136" fill="#efe9df" font-family="Arial, sans-serif" font-size="14">hook_clip_social_fast.mov</text>
+  <text x="72" y="166" fill="#8f8d88" font-family="Arial, sans-serif" font-size="14">main_launch_walkthrough.mp4</text>
+  <rect x="58" y="236" width="198" height="122" rx="12" fill="#f2a94e" opacity="0.12" stroke="#f2a94e"/>
+  <text x="78" y="272" fill="#f2a94e" font-family="monospace" font-size="14">VIDEOAGENT ADAPTER</text>
+  <rect x="78" y="308" width="158" height="34" rx="8" fill="#efe9df"/>
+  <text x="96" y="330" fill="#050505" font-family="Arial, sans-serif" font-size="13" font-weight="700">Run VideoAgent arena</text>
+  <text x="58" y="406" fill="#8f8d88" font-family="monospace" font-size="14">CUTS &amp; BRANCHES</text>
+  <rect x="58" y="430" width="198" height="48" rx="10" fill="#f2a94e" opacity="0.12" stroke="#f2a94e"/>
+  <text x="78" y="460" fill="#efe9df" font-family="Arial, sans-serif" font-size="15">Main Cut</text>
+  <rect x="58" y="492" width="198" height="48" rx="10" fill="#050505" stroke="#2c2927"/>
+  <text x="78" y="522" fill="#efe9df" font-family="Arial, sans-serif" font-size="15">VideoAgent Viral Cut</text>
+  <rect x="324" y="72" width="628" height="354" rx="16" fill="#050505" stroke="#2c2927"/>
+  <text x="560" y="252" fill="#efe9df" font-family="Arial, sans-serif" font-size="28" font-weight="700">Video Preview</text>
+  <rect x="324" y="464" width="628" height="206" rx="14" fill="#0c0b0b" stroke="#2c2927"/>
+  <text x="354" y="504" fill="#8f8d88" font-family="monospace" font-size="14">EDITOR TIMELINE</text>
+  <rect x="354" y="536" width="96" height="48" rx="8" fill="#f2a94e" opacity="0.35"/>
+  <rect x="458" y="536" width="130" height="48" rx="8" fill="#4b5563"/>
+  <rect x="596" y="536" width="154" height="48" rx="8" fill="#374151"/>
+  <rect x="758" y="536" width="112" height="48" rx="8" fill="#4b5563"/>
+  <rect x="878" y="536" width="52" height="48" rx="8" fill="#f2a94e" opacity="0.45"/>
+  <text x="1024" y="74" fill="#f2a94e" font-family="monospace" font-size="16">TEAM MEMORY</text>
+  <rect x="1024" y="102" width="198" height="144" rx="12" fill="#050505" stroke="#2c2927"/>
+  <text x="1046" y="142" fill="#efe9df" font-family="Arial, sans-serif" font-size="15">Hook under 4s</text>
+  <text x="1046" y="176" fill="#efe9df" font-family="Arial, sans-serif" font-size="15">Bold captions</text>
+  <text x="1046" y="210" fill="#efe9df" font-family="Arial, sans-serif" font-size="15">CTA before drop-off</text>
+  <text x="1024" y="300" fill="#8f8d88" font-family="monospace" font-size="16">ACTIVITY AUDIT LOGS</text>
+  <text x="1024" y="340" fill="#efe9df" font-family="Arial, sans-serif" font-size="14">VideoAgent generated Viral Cut</text>
+  <text x="1024" y="370" fill="#efe9df" font-family="Arial, sans-serif" font-size="14">Verifier score 82/100</text>
+  <text x="1024" y="400" fill="#efe9df" font-family="Arial, sans-serif" font-size="14">Aetos added plan comment</text>
+</svg>

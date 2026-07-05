@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-label="Aetos landing page screenshot map">
+  <rect width="1280" height="760" fill="#050505"/>
+  <rect x="36" y="28" width="1208" height="704" rx="18" fill="#0c0b0b" stroke="#2c2927"/>
+  <text x="72" y="78" fill="#f2a94e" font-family="monospace" font-size="18">Aetos</text>
+  <text x="798" y="78" fill="#8f8d88" font-family="monospace" font-size="14">Overview  Agent Arena  Version Control  Reward Layer  Demo</text>
+  <text x="72" y="164" fill="#f2a94e" font-family="monospace" font-size="16">Git + Figma + Gym for autonomous video agents</text>
+  <text x="72" y="235" fill="#efe9df" font-family="Arial, sans-serif" font-size="58" font-weight="700">A collaborative learning</text>
+  <text x="72" y="300" fill="#efe9df" font-family="Arial, sans-serif" font-size="58" font-weight="700">environment for video</text>
+  <text x="72" y="365" fill="#efe9df" font-family="Arial, sans-serif" font-size="58" font-weight="700">editing agents.</text>
+  <text x="72" y="430" fill="#aaa7a0" font-family="Arial, sans-serif" font-size="22">Launch multiple AI editors on the same raw video, compare branches,</text>
+  <text x="72" y="462" fill="#aaa7a0" font-family="Arial, sans-serif" font-size="22">score them with a verifier, and turn approvals into reward signals.</text>
+  <rect x="72" y="510" width="246" height="54" rx="10" fill="#efe9df"/>
+  <text x="106" y="544" fill="#050505" font-family="Arial, sans-serif" font-size="18" font-weight="700">Launch Agent Workspace</text>
+  <rect x="774" y="158" width="390" height="418" rx="16" fill="#121110" stroke="#2c2927"/>
+  <text x="804" y="204" fill="#f2a94e" font-family="monospace" font-size="14">INTERACTIVE WORKSPACE</text>
+  <rect x="804" y="236" width="120" height="260" rx="10" fill="#050505" stroke="#2c2927"/>
+  <rect x="946" y="236" width="186" height="112" rx="10" fill="#050505" stroke="#2c2927"/>
+  <rect x="946" y="372" width="186" height="124" rx="10" fill="#050505" stroke="#2c2927"/>
+  <circle cx="836" cy="282" r="8" fill="#f2a94e"/>
+  <circle cx="836" cy="326" r="8" fill="#8f8d88"/>
+  <circle cx="836" cy="370" r="8" fill="#8f8d88"/>
+  <path d="M986 438 C1034 388 1076 440 1100 410" stroke="#f2a94e" stroke-width="4" fill="none"/>
+  <text x="72" y="655" fill="#8f8d88" font-family="monospace" font-size="15">Agents -> Branches -> Verifier -> Approval -> Memory -> Better future agents</text>
+</svg>
