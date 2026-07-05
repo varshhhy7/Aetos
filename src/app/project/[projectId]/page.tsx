@@ -1,34 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { useAetosStore } from "@/lib/store";
-import { BranchRibbon } from "@/components/BranchRibbon";
-import { BranchSelector } from "@/components/BranchSelector";
 import { VideoPreview } from "@/components/VideoPreview";
 import { Timeline } from "@/components/Timeline";
 import { MemoryPanel } from "@/components/MemoryPanel";
 import { CommentPanel } from "@/components/CommentPanel";
 import { ActivityFeed } from "@/components/ActivityFeed";
-import { CollaboratorPresence } from "@/components/CollaboratorPresence";
 import { EtherealShadow } from "@/components/ui/etheral-shadow";
-import { motion } from "framer-motion";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.06,
-      delayChildren: 0.05,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] as const } },
-};
+import type { VideoAgentRunResponse } from "@/lib/videoagent-adapter";
 
 export default function WorkspacePage() {
   const params = useParams<{ projectId: string }>();
@@ -42,9 +23,12 @@ export default function WorkspacePage() {
   const allActivity = useAetosStore((s) => s.activity);
   const memory = useAetosStore((s) => s.memory[projectId]);
   const createBranch = useAetosStore((s) => s.createBranch);
+  const createAgentBranch = useAetosStore((s) => s.createAgentBranch);
 
   const [creating, setCreating] = useState(false);
   const [newName, setNewName] = useState("");
+  const [agentRunning, setAgentRunning] = useState(false);
+  const [agentError, setAgentError] = useState<string | null>(null);
 
   const project = useMemo(() => allProjects.find((p) => p.id === projectId), [allProjects, projectId]);
   const branches = useMemo(
@@ -59,19 +43,12 @@ export default function WorkspacePage() {
     [allActivity, projectId],
   );
 
-  const [currentBranchId, setCurrentBranchId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fromQuery = searchParams.get("branch");
-    if (fromQuery && branches.some((b) => b.id === fromQuery)) {
-      setCurrentBranchId(fromQuery);
-    } else if (!currentBranchId && branches.length > 0) {
-      setCurrentBranchId(branches[0].id);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [branches, searchParams]);
-
-  const currentBranch = branches.find((b) => b.id === currentBranchId) ?? branches[0];
+  const requestedBranchId = searchParams.get("branch");
+  const [currentBranchId, setCurrentBranchId] = useState<string | null>(requestedBranchId);
+  const currentBranch =
+    branches.find((b) => b.id === currentBranchId) ??
+    branches.find((b) => b.id === requestedBranchId) ??
+    branches[0];
 
   function handleCreate() {
     const name = newName.trim() || `New Cut ${branches.length + 1}`;
@@ -79,6 +56,51 @@ export default function WorkspacePage() {
     setNewName("");
     setCreating(false);
     setCurrentBranchId(newBranch.id);
+  }
+
+  async function handleRunVideoAgent() {
+    if (!currentBranch || agentRunning) return;
+
+    setAgentRunning(true);
+    setAgentError(null);
+
+    try {
+      const response = await fetch("/api/agents/videoagent/run", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          projectId,
+          sourceBranchId: currentBranch.id,
+          sourceBranchName: currentBranch.name,
+          goal: project?.description ?? "Create a strong launch video for social and investor audiences.",
+          strategies: ["viral", "premium", "story", "brand_safe"],
+          timeline: currentBranch.timeline,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("VideoAgent adapter failed to generate branch plans.");
+      }
+
+      const data = (await response.json()) as VideoAgentRunResponse;
+      const createdBranches = data.plans.map((plan) =>
+        createAgentBranch(projectId, currentBranch.id, plan.name, plan.timeline, {
+          createdBy: "VideoAgent",
+          verifierScore: plan.verifierScore,
+          summary: `${plan.summary} Recommendation: ${plan.recommendation}`,
+        }),
+      );
+
+      if (createdBranches[0]) {
+        setCurrentBranchId(createdBranches[0].id);
+      }
+    } catch (error) {
+      setAgentError(error instanceof Error ? error.message : "VideoAgent adapter failed.");
+    } finally {
+      setAgentRunning(false);
+    }
   }
 
   if (!project || !currentBranch) {
@@ -112,6 +134,26 @@ export default function WorkspacePage() {
               <span className="truncate">ambient_bass_hype.wav</span>
             </div>
           </div>
+        </div>
+
+        <div className="rounded-xl border border-[#f2a94e]/15 bg-[#f2a94e]/5 p-3 space-y-3">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#f2a94e]">VideoAgent Adapter</span>
+            <p className="text-[11px] leading-relaxed text-zinc-400">
+              Generate Viral, Premium, Story, and Brand-Safe branches from the current cut.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRunVideoAgent}
+            disabled={agentRunning}
+            className="w-full rounded-lg bg-[#efe9df] px-3 py-2 text-[11px] font-semibold text-black transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {agentRunning ? "Running VideoAgent..." : "Run VideoAgent arena"}
+          </button>
+          {agentError && (
+            <p className="text-[10px] leading-relaxed text-red-300">{agentError}</p>
+          )}
         </div>
 
         <div className="flex-1 flex flex-col min-h-0">

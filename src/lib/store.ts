@@ -43,6 +43,13 @@ type AetosState = {
   getActivity: (projectId: string) => ActivityEvent[];
 
   createBranch: (projectId: string, sourceBranchId: string, name: string) => Branch;
+  createAgentBranch: (
+    projectId: string,
+    sourceBranchId: string,
+    name: string,
+    timeline: Timeline,
+    options?: { createdBy?: string; verifierScore?: number; summary?: string },
+  ) => Branch;
   addComment: (
     projectId: string,
     branchId: string,
@@ -120,6 +127,40 @@ export const useAetosStore = create<AetosState>((set, get) => ({
       eventType: "branch_created",
       message: `${CURRENT_USER} created ${branch.name}`,
     });
+    return branch;
+  },
+
+  createAgentBranch: (projectId, sourceBranchId, name, timeline, options) => {
+    const source = get().getBranch(sourceBranchId);
+    if (!source) throw new Error("Source branch not found");
+    const now = new Date().toISOString();
+    const createdBy = options?.createdBy ?? "VideoAgent";
+    const branch: Branch = {
+      id: makeId("branch"),
+      projectId,
+      name,
+      parentBranchId: source.id,
+      status: "draft",
+      timeline: JSON.parse(JSON.stringify(timeline)) as Timeline,
+      createdBy,
+      createdAt: now,
+      updatedAt: now,
+    };
+    set((state) => ({ branches: [...state.branches, branch] }));
+    get().logActivity({
+      projectId,
+      branchId: branch.id,
+      actor: createdBy,
+      eventType: "branch_created",
+      message: `${createdBy} generated ${branch.name}${
+        options?.verifierScore ? ` with verifier score ${options.verifierScore}/100` : ""
+      }`,
+    });
+    if (options?.summary) {
+      get().addComment(projectId, branch.id, options.summary, {
+        author: createdBy,
+      });
+    }
     return branch;
   },
 
