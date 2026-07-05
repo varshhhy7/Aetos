@@ -5,6 +5,7 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
 import { cn } from "@oc/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
+import { getOverlayContainer } from "./overlay-container";
 
 function Dialog({
 	open,
@@ -49,7 +50,7 @@ const DialogContent = React.forwardRef<
 	React.ElementRef<typeof DialogPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
-	<DialogPortal>
+	<DialogPortal container={getOverlayContainer()}>
 		<DialogOverlay />
 		<DialogPrimitive.Content
 			ref={ref}

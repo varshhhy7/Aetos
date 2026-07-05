@@ -6,6 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { X } from "lucide-react";
 import { cn } from "@oc/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
+import { getOverlayContainer } from "./overlay-container";
 
 function Sheet({
 	open,
@@ -73,7 +74,7 @@ const SheetContent = React.forwardRef<
 	React.ElementRef<typeof SheetPrimitive.Content>,
 	SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => (
-	<SheetPortal>
+	<SheetPortal container={getOverlayContainer()}>
 		<SheetOverlay />
 		<SheetPrimitive.Content
 			ref={ref}

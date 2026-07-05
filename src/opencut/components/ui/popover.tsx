@@ -4,6 +4,7 @@ import * as React from "react";
 import { Popover as PopoverPrimitive } from "radix-ui";
 import { cn } from "@oc/utils/ui";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
+import { getOverlayContainer } from "./overlay-container";
 
 function Popover({
 	open,
@@ -33,7 +34,7 @@ const PopoverContent = React.forwardRef<
 	React.ElementRef<typeof PopoverPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
-	<PopoverPrimitive.Portal>
+	<PopoverPrimitive.Portal container={getOverlayContainer()}>
 		<PopoverPrimitive.Content
 			ref={ref}
 			align={align}

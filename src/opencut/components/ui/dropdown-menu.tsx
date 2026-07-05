@@ -5,6 +5,7 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 import { Check, ChevronRight, Circle } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@oc/utils/ui";
+import { getOverlayContainer } from "./overlay-container";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
 
 function DropdownMenu({
@@ -95,7 +96,7 @@ const DropdownMenuContent = React.forwardRef<
 	React.ElementRef<typeof DropdownMenuPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>
 >(({ className, sideOffset = 4, ...props }, ref) => (
-	<DropdownMenuPrimitive.Portal>
+	<DropdownMenuPrimitive.Portal container={getOverlayContainer()}>
 		<DropdownMenuPrimitive.Content
 			ref={ref}
 			sideOffset={sideOffset}

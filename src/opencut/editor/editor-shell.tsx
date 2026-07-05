@@ -20,11 +20,8 @@ import { usePasteMedia } from "@oc/media/use-paste-media";
 import { MobileGate } from "@oc/components/editor/mobile-gate";
 import { TooltipProvider } from "@oc/components/ui/tooltip";
 import { Toaster } from "@oc/components/ui/sonner";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useEditor } from "@oc/editor/use-editor";
-import { Cancel01Icon } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Button } from "@oc/components/ui/button";
 import {
 	createPreviewOverlayControl,
 	isPreviewOverlayVisible,
@@ -45,7 +42,6 @@ export default function EditorShell({ projectId }: { projectId: string }) {
 			<TooltipProvider>
 				<EditorProvider projectId={projectId}>
 					<div className="bg-background flex h-screen w-screen flex-col overflow-hidden">
-						<DegradedRendererBanner />
 						<EditorHeader />
 						<div className="min-h-0 min-w-0 flex-1">
 							<EditorLayout />
@@ -57,27 +53,6 @@ export default function EditorShell({ projectId }: { projectId: string }) {
 				<Toaster />
 			</TooltipProvider>
 		</MobileGate>
-	);
-}
-
-function DegradedRendererBanner() {
-	const isDegraded = useEditor((e) => e.renderer.isDegraded);
-	const [dismissed, setDismissed] = useState(false);
-	if (!isDegraded || dismissed) return null;
-
-	return (
-		<div className="bg-accent border-b h-9 flex items-center justify-center gap-2 text-xs text-muted-foreground">
-			<span>For the best experience, open the editor in Chrome.</span>
-			<Button
-				variant="text"
-				size="icon"
-				className="p-0 w-auto [&_svg]:size-3.5"
-				onClick={() => setDismissed(true)}
-				aria-label="Dismiss"
-			>
-				<HugeiconsIcon icon={Cancel01Icon} />
-			</Button>
-		</div>
 	);
 }
 

@@ -6,20 +6,15 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import Link from "next/link";
 import { RenameProjectDialog } from "@oc/project/components/rename-project-dialog";
 import { DeleteProjectDialog } from "@oc/project/components/delete-project-dialog";
 import { useRouter } from "next/navigation";
-import { FaDiscord } from "react-icons/fa6";
 import { ExportButton } from "./export-button";
 import { VersionControl } from "@oc/versioning/components/version-panel";
-import { FeedbackPopover } from "@oc/feedback/components/feedback-popover";
 import { ThemeToggle } from "../theme-toggle";
 import { DEFAULT_LOGO_URL } from "@oc/site/brand";
-import { SOCIAL_LINKS } from "@oc/site/social";
 import { toast } from "sonner";
 import { useEditor } from "@oc/editor/use-editor";
 import { CommandIcon, Logout05Icon } from "@hugeicons/core-free-icons";
@@ -37,7 +32,6 @@ export function EditorHeader() {
 			</div>
 			<nav className="flex items-center gap-2">
 				<VersionControl />
-				<FeedbackPopover />
 				<ExportButton />
 				<ThemeToggle />
 			</nav>
@@ -137,18 +131,6 @@ function ProjectDropdown() {
 						icon={<HugeiconsIcon icon={CommandIcon} />}
 					>
 						Shortcuts
-					</DropdownMenuItem>
-
-					<DropdownMenuSeparator />
-
-					<DropdownMenuItem asChild icon={<FaDiscord className="size-4!" />}>
-						<Link
-							href={SOCIAL_LINKS.discord}
-							target="_blank"
-							rel="noopener noreferrer"
-						>
-							Discord
-						</Link>
 					</DropdownMenuItem>
 				</DropdownMenuContent>
 			</DropdownMenu>

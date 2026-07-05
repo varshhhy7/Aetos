@@ -8,6 +8,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@oc/utils/ui";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { useOverlayOpenChange } from "./use-overlay-open-change";
+import { getOverlayContainer } from "./overlay-container";
 
 function Select({
 	open,
@@ -133,7 +134,7 @@ const SelectContent = React.forwardRef<
 	React.ElementRef<typeof SelectPrimitive.Content>,
 	React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
 >(({ className, children, position = "popper", ...props }, ref) => (
-	<SelectPrimitive.Portal>
+	<SelectPrimitive.Portal container={getOverlayContainer()}>
 		<SelectPrimitive.Content
 			ref={ref}
 			className={cn(
